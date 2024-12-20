@@ -1,17 +1,6 @@
 import Pathfinding.IndexMap
 open Std
 
-def reverse_path (parents : IndexMap N V) (parent : V → Nat) (start : Nat) : Array N := Id.run do
-  let mut res := []
-  let mut i := start
-  repeat
-    if let some (node,value) := parents.get_index i then
-      i := parent value
-      res := node :: res
-    else
-      break
-  res.toArray
-
 def bfs_core 
   [BEq α] [Hashable α] [Inhabited α] 
   (check_first: Bool) (successors : α → List α) (success : α → Bool) (start : α) : Option (Array α) := do
@@ -28,7 +17,7 @@ def bfs_core
       if let some (node,_) := parents.get_index i then
         let nexts := successors node
         if let some goal := nexts.find? success then
-          res := reverse_path parents id i |>.push goal
+          res := parents.reverse_path id i |>.push goal
           break
         else 
           parents := nexts.foldl (λ m v ↦ m.insert v i) parents
