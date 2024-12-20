@@ -8,8 +8,6 @@ structure Bucket (K V : Type) where
   value : V
 deriving Inhabited, Repr
 
--- hashes are always 
-
 abbrev Indices := HashMap UInt64 Nat
 abbrev Entries (K V : Type) := Array (Bucket K V)
 
@@ -39,44 +37,9 @@ def get_index (map : IndexMap K V) (index : Nat) : Option (K × V) := do
   let {key,value,..} ← map.entries[index]?
   pure (key,value)
 
+/-
 #eval (IndexMap.empty : IndexMap String String) 
   |>.insert "1" "one"
   |>.insert "1" "fake"
   |>.insert "2" "two"
-
-/-
-def Bucket.refs (b : Bucket K V) := (b.key,b.value)
-
-
-structure IndexMap (K V : Type) where
-  entries : Entries K V
-
-def IndexMap.get_index (im : IndexMap K V) (index : Nat) : Option (K × V) :=
-  Bucket.refs <$> im.entries[index]?
-
-
-def IndexMap.insert_full (im : IndexMap K V) (hash : Nat) (key : K) (value : V) :=
-  1
-
-#check (#[{hash := 0, key := "key", value := "value"}] : Entries String String)
--/
-
-/-
-def f (x : Nat) :=
-  match x with
-  | 1 => [2,3]
-  | 3 => []
-  | 2 => [4]
-  | _ => []
-
-partial def bfs (step : α → List α) (start : α) : List (List α) := go [(start,[start])] |>.map List.reverse where
-  go (xs : List (α × List α)) := 
-    match xs with
-    | [] => []
-    | (s,path) :: tl =>  
-        let x := step s |>.map (λ x ↦ (x,x :: path))
-        path :: go (tl ++ x)
-
-
-#eval bfs f 1
 -/
