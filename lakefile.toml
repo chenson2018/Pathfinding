@@ -1,0 +1,10 @@
+name = "Pathfinding"
+version = "0.1.0"
+
+[[require]]
+name = "batteries"
+scope = "leanprover-community"
+rev = "main"
+
+[[lean_lib]]
+name = "Pathfinding"
