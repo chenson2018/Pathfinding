@@ -24,7 +24,6 @@ def run_dijkstra
         let (node,_) := parents.get_index index |>.get!
         if success node then 
           target_reached := some index 
-          break
         else
           for (successor, move_cost) in successors node do
             let new_cost := cost + move_cost
@@ -33,10 +32,10 @@ def run_dijkstra
             | none =>
                 n := parents.indices.size
                 parents := parents.insert successor (index,new_cost)
-            | some (index',cost') =>
+            | some (_,cost') =>
                 if cost' > new_cost then
-                  n := index'
-                  parents := parents.insert successor (index',new_cost)
+                  n := index
+                  parents := parents.insert successor (index,new_cost)
                 else
                   continue
             to_see := to_see.insert {cost := new_cost, index := n} 
