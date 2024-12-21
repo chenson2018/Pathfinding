@@ -50,10 +50,10 @@ def OPEN := maze |>.splitOn "\n" |>.map (λ l ↦ l.toList.map (·=='.'))
 
 def maze_successors (x y : Nat) := 
   [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)] |>.filterMap
-  (λ (nx, ny) ↦ let b := OPEN[ny]![nx]!; if b then some ((nx, ny), 1) else none)
+  (λ (nx, ny) ↦ if OPEN[ny]![nx]! then some ((nx, ny), 1) else none)
 
 def maze_sol := dijkstra (uncurry maze_successors) (·==(6,3)) (2,3) |>.get!
 
-example : snd maze_sol = 8 := by native_decide
-example : (fst maze_sol |>.all (λ (x,y) ↦ OPEN[y]![x]!)) = true := by native_decide
+example : snd maze_sol = 8                                           := by native_decide
+example : (fst maze_sol |>.all (λ (x,y) ↦ OPEN[y]![x]!)) = true      := by native_decide
 example : dijkstra (uncurry maze_successors) (·==(1,1)) (2,3) = none := by native_decide
