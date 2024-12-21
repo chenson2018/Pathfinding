@@ -33,7 +33,15 @@ example : bfs_loop (List.map Prod.fst ∘ weighted_successors) 2 = some #[2, 5, 
 example : bfs_loop (List.map Prod.fst ∘ weighted_successors) 8 = none                  := by native_decide
 
 -- weighted least paths
-example (n : Fin 9) : dijkstra weighted_successors (·==n) 1 = weighted_successors_expected n := by native_decide +revert
+example : dijkstra weighted_successors (·==0) 1 = weighted_successors_expected 0 := by native_decide
+example : dijkstra weighted_successors (·==1) 1 = weighted_successors_expected 1 := by native_decide
+example : dijkstra weighted_successors (·==2) 1 = weighted_successors_expected 2 := by native_decide
+example : dijkstra weighted_successors (·==3) 1 = weighted_successors_expected 3 := by native_decide
+example : dijkstra weighted_successors (·==4) 1 = weighted_successors_expected 4 := by native_decide
+example : dijkstra weighted_successors (·==5) 1 = weighted_successors_expected 5 := by native_decide
+example : dijkstra weighted_successors (·==6) 1 = weighted_successors_expected 6 := by native_decide
+example : dijkstra weighted_successors (·==7) 1 = weighted_successors_expected 7 := by native_decide
+example : dijkstra weighted_successors (·==8) 1 = weighted_successors_expected 8 := by native_decide
 example : dijkstra (λ _ ↦  [(1,1)]) (·==2) 1 = none := by native_decide
 
 def maze :=
