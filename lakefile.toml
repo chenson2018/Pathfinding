@@ -1,5 +1,6 @@
 name = "Pathfinding"
 version = "0.1.0"
+testRunner = "Test"
 
 [[require]]
 name = "batteries"
@@ -8,3 +9,6 @@ rev = "main"
 
 [[lean_lib]]
 name = "Pathfinding"
+
+[[lean_lib]]
+name = "Test"

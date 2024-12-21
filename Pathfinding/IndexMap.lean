@@ -37,6 +37,12 @@ def get_index (map : IndexMap K V) (index : Nat) : Option (K × V) := do
   let {key,value,..} ← map.entries[index]?
   pure (key,value)
 
+def get_index_of [Hashable K] (map : IndexMap K V) (key : K) : Option Nat := 
+  map.indices[Hashable.hash key]?
+
+def get [Inhabited K] [Inhabited V] [Hashable K] (map : IndexMap K V) (key : K) : Option V := 
+  map.get_index_of key |>.map (map.entries[·]! |> Bucket.value)
+
 def reverse_path (parents : IndexMap N V) (parent : V → Nat) (start : Nat) : Array N := Id.run do
   let mut res := []
   let mut i := start
