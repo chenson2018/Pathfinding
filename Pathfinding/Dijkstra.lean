@@ -10,7 +10,6 @@ def run_dijkstra
   [BEq α] [Hashable α] [Inhabited α] 
   [LT β] [(x y : β) → Decidable (x < y)] [Zero β] [Inhabited β] [HAdd β β β]
   (successors : α → List (α × β)) (success : α → Bool) (start : α) : IndexMap α (Nat × β) × Option Nat := Id.run do
-
     let mut to_see : BinaryHeap (SmallestHolder β) (λ s1 s2 ↦ s1.cost < s2.cost) := BinaryHeap.empty _
     to_see := to_see.insert {cost := Zero.zero, index := 0}
 
@@ -18,29 +17,21 @@ def run_dijkstra
     parents := parents.insert start (UInt64.size,Zero.zero)
     let mut target_reached : Option Nat := none
 
-    repeat
-      if let some {cost,index} := to_see.max then
-        to_see := to_see.popMax
-        let (node,_) := parents.get_index index |>.get!
-        if success node then 
-          target_reached := some index 
-        else
-          for (successor, move_cost) in successors node do
-            let new_cost := cost + move_cost
-            let mut n := 0
-            match parents.get successor with
-            | none =>
-                n := parents.indices.size
-                parents := parents.insert successor (index,new_cost)
-            | some (_,cost') =>
-                if cost' > new_cost then
-                  n := index
-                  parents := parents.insert successor (index,new_cost)
-                else
-                  continue
-            to_see := to_see.insert {cost := new_cost, index := n} 
+    while let some {cost,index} := to_see.max do
+      to_see := to_see.popMax
+      let (node,_) := parents.get_index index |>.get!
+      if success node then 
+        target_reached := some index 
       else
-        break
+        for (successor, move_cost) in successors node do
+          let new_cost := cost + move_cost
+          let (n,new_best?) := 
+            match parents.get successor with
+            | none => (parents.indices.size,true)
+            | some (_,cost') => (index, cost' > new_cost)
+          if new_best? then 
+            parents := parents.insert successor (index,new_cost)
+            to_see := to_see.insert {cost := new_cost, index := n}
 
     (parents,target_reached)
 

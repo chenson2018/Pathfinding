@@ -13,16 +13,13 @@ def bfs_core
     let mut parents := IndexMap.empty
     parents := parents.insert start UInt64.size
 
-    repeat 
-      if let some (node,_) := parents.get_index i then
-        let nexts := successors node
-        if let some goal := nexts.find? success then
-          res := parents.reverse_path id i |>.push goal
-          break
-        else 
-          parents := nexts.foldl (λ m v ↦ m.insert v i) parents
-      else
-        break 
+    while let some (node,_) := parents.get_index i do
+      let nexts := successors node
+      if let some goal := nexts.find? success then
+        res := parents.reverse_path id i |>.push goal
+        break
+      else 
+        parents := nexts.foldl (λ m v ↦ m.insert v i) parents
       i := i + 1
 
     res
