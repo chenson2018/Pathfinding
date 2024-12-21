@@ -1,7 +1,7 @@
 import Pathfinding
 open Function Prod
 
-def weigthed_successors (n : Fin 9) : List (Fin 9 × Nat) :=
+def weighted_successors (n : Fin 9) : List (Fin 9 × Nat) :=
   match n with
   | 0 => [(1, 7), (2, 7), (3, 6)]
   | 1 => [(0, 8), (6, 7)]
@@ -13,26 +13,28 @@ def weigthed_successors (n : Fin 9) : List (Fin 9 × Nat) :=
   | 7 => [(5, 8)]
   | 8 => []
 
+def weighted_successors_expected (n : Fin 9) : Option (Array (Fin 9) × Nat) :=
+  match n with
+  | 0 => some (#[1, 0], 8)
+  | 1 => some (#[1], 0)
+  | 2 => some (#[1, 6, 2], 12)
+  | 3 => some (#[1, 0, 3], 14)
+  | 4 => some (#[1, 6, 4], 12)
+  | 5 => some (#[1, 6, 5], 9)
+  | 6 => some (#[1, 6], 7)
+  | 7 => some (#[1, 0, 3, 7], 21)
+  | 8 => none
+
 -- bfs loops
 -- TODO: prevent getting stuck in an unrelated loop
-#eval bfs_loop (List.map Prod.fst ∘ weigthed_successors) 0
-#eval bfs_loop (List.map Prod.fst ∘ weigthed_successors) 1
-#eval bfs_loop (List.map Prod.fst ∘ weigthed_successors) 2
-#eval bfs_loop (List.map Prod.fst ∘ weigthed_successors) 3
-#eval bfs_loop (List.map Prod.fst ∘ weigthed_successors) 4
-#eval bfs_loop (List.map Prod.fst ∘ weigthed_successors) 8
-  
-#eval dijkstra weigthed_successors (·==0) 1
-#eval dijkstra weigthed_successors (·==1) 1
-#eval dijkstra weigthed_successors (·==2) 1
-#eval dijkstra weigthed_successors (·==3) 1
-#eval dijkstra weigthed_successors (·==4) 1
-#eval dijkstra weigthed_successors (·==5) 1
-#eval dijkstra weigthed_successors (·==6) 1
-#eval dijkstra weigthed_successors (·==7) 1
-#eval dijkstra weigthed_successors (·==8) 1
+example : bfs_loop (List.map Prod.fst ∘ weighted_successors) 0 = some #[0, 1, 0]       := by native_decide
+example : bfs_loop (List.map Prod.fst ∘ weighted_successors) 1 = some #[1, 0, 1]       := by native_decide
+example : bfs_loop (List.map Prod.fst ∘ weighted_successors) 2 = some #[2, 5, 1, 0, 2] := by native_decide
+example : bfs_loop (List.map Prod.fst ∘ weighted_successors) 8 = none                  := by native_decide
 
-#eval dijkstra (λ _ ↦  [(1,1)]) (·==2) 1
+-- weighted least paths
+example (n : Fin 9) : dijkstra weighted_successors (·==n) 1 = weighted_successors_expected n := by native_decide +revert
+example : dijkstra (λ _ ↦  [(1,1)]) (·==2) 1 = none := by native_decide
 
 def maze :=
 "#########
@@ -42,8 +44,7 @@ def maze :=
 #...#...#
 #...#...#
 #...#...#
-#########
-"
+#########"
 
 def OPEN := maze |>.splitOn "\n" |>.map (λ l ↦ l.toList.map (·=='.'))
 
@@ -53,6 +54,6 @@ def maze_successors (x y : Nat) :=
 
 def maze_sol := dijkstra (uncurry maze_successors) (·==(6,3)) (2,3) |>.get!
 
-#eval snd maze_sol
-#eval fst maze_sol |>.all (λ (x,y) ↦ OPEN[y]![x]!)
-#eval dijkstra (uncurry maze_successors) (·==(1,1)) (2,3)
+example : snd maze_sol = 8 := by native_decide
+example : (fst maze_sol |>.all (λ (x,y) ↦ OPEN[y]![x]!)) = true := by native_decide
+example : dijkstra (uncurry maze_successors) (·==(1,1)) (2,3) = none := by native_decide
